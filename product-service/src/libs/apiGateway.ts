@@ -19,6 +19,10 @@ export const formatJSONResponse = (
   statusCode: ResponseCodes,
   response: Record<string, unknown>
 ) => ({
+  headers: {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Credentials': true,
+  },
   statusCode,
   body: JSON.stringify(response),
 });

@@ -8,7 +8,7 @@ import { getProduct as getDBProduct } from 'src/db';
 
 const getProduct: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
   try {
-    const id = JSON.parse(event.pathParameters as any).id;
+    const id = event.pathParameters.id;
     const product = await getDBProduct(id);
 
     if (!product) {
