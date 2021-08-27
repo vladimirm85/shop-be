@@ -13,7 +13,7 @@ export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
   APIGatewayProxyResult
 >;
 
-type ResponseCodes = 200 | 404;
+type ResponseCodes = 200 | 404 | 500;
 
 export const formatJSONResponse = (
   statusCode: ResponseCodes,
