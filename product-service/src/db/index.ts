@@ -84,21 +84,19 @@ export const getProducts = () =>
     try {
       resolve(products);
     } catch (e) {
-      console.log(`Failed to load products: ${e.message}`);
-      reject(`Failed to load products: ${e.message}`);
+      reject(e);
     }
   });
 
 export const getProduct = (id: string) =>
-  new Promise<Product[]>((resolve, reject) => {
+  new Promise<Product>((resolve, reject) => {
     try {
       const product = products.find((p) => p.id === id);
       if (product) {
-        resolve(products);
+        resolve(product);
       }
-      throw new Error(`o such product with id: ${id}`);
+      resolve(null);
     } catch (e) {
-      console.log(`Failed to load product: ${e.message}`);
-      reject(`Failed to load product: ${e.message}`);
+      reject(e);
     }
   });
