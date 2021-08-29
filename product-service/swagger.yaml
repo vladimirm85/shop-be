@@ -1,0 +1,135 @@
+---
+openapi: 3.0.0
+info:
+  title: product-service
+  description: BE for F1 teams postres shop
+  contact:
+    name: Vladimir Mazhirin
+    url: https://github.com/vladimirm85
+    email: vladimirm85@gmail.com
+  version: 1.0.0
+servers:
+- url: https://bexban5i4c.execute-api.eu-west-1.amazonaws.com/dev
+  description: product-service server
+- url: https://virtserver.swaggerhub.com/vladimirm1985/rss-shop-product-service/1.0.0
+  description: SwaggerHub API Auto Mocking
+paths:
+  /products:
+    get:
+      tags:
+      - Product
+      summary: Get all products
+      responses:
+        "200":
+          description: Get all products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+  /product/{id}:
+    get:
+      tags:
+      - Product
+      summary: Get product by id
+      parameters:
+      - name: id
+        in: path
+        description: Product id
+        required: true
+        style: simple
+        explode: false
+        schema:
+          type: string
+          format: uuid
+      responses:
+        "200":
+          description: Get all products
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_200'
+        "404":
+          description: Not found
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+        "500":
+          description: Server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/inline_response_500'
+components:
+  schemas:
+    Product:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+        title:
+          type: string
+        description:
+          type: string
+        count:
+          type: number
+        price:
+          type: number
+    inline_response_200:
+      type: object
+      properties:
+        products:
+          type: array
+          items:
+            $ref: '#/components/schemas/Product'
+    inline_response_500:
+      type: object
+      properties:
+        message:
+          type: string
+  responses:
+    GetProducts:
+      description: Get all products
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_response_200'
+    GetProduct:
+      description: Get product by id
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              product:
+                $ref: '#/components/schemas/Product'
+    ServerError:
+      description: Server error
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_response_500'
+    NotFound:
+      description: Not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/inline_response_500'
+  parameters:
+    ProductId:
+      name: id
+      in: path
+      description: Product id
+      required: true
+      style: simple
+      explode: false
+      schema:
+        type: string
+        format: uuid
