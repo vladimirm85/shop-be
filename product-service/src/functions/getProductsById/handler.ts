@@ -14,6 +14,7 @@ const getProduct: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
     const product = await getDBProduct(id);
 
     if (!product) {
+      console.log(`PRODUCT WITH ID: ${id} NOT FOUND`);
       return formatJSONResponse(404, {
         message: `No such product with id: ${id}`,
       });

@@ -71,7 +71,7 @@ const products: Product[] = [
   },
 ];
 
-interface Product {
+export interface Product {
   count: number;
   description: string;
   id: string;
