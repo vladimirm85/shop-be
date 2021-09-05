@@ -5,7 +5,9 @@ import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import { getProducts as getDBProducts } from '../../db';
 
-const getProducts: ValidatedEventAPIGatewayProxyEvent<any> = async () => {
+const getProducts: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
+  console.log('GET PRODUCT LAMBDA LAUNCHED WITH EVENT: ', event);
+
   try {
     const products = await getDBProducts();
 
@@ -13,7 +15,7 @@ const getProducts: ValidatedEventAPIGatewayProxyEvent<any> = async () => {
       return formatJSONResponse(200, { products });
     }
   } catch (e) {
-    console.log(e);
+    console.log('DATABASE ERROR: ', e);
     formatJSONResponse(404, { message: e.message });
   }
 };

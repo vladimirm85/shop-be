@@ -1,3 +1,4 @@
+// import schema from './schema';
 import { handlerPath } from '@libs/handlerResolver';
 
 export default {
@@ -6,7 +7,8 @@ export default {
     {
       http: {
         method: 'get',
-        path: 'product/{id}',
+        path: 'products',
+        cors: true,
       },
     },
   ],
