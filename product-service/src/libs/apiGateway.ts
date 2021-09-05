@@ -13,12 +13,23 @@ export type ValidatedEventAPIGatewayProxyEvent<S> = Handler<
   APIGatewayProxyResult
 >;
 
-type ResponseCodes = 200 | 404;
+export interface FormatJSONResponse {
+  headers: Headers;
+  statusCode: ResponseCodes;
+  body: string;
+}
+
+type ResponseCodes = 200 | 404 | 500;
+
+type Headers = {
+  'Access-Control-Allow-Origin': string;
+  'Access-Control-Allow-Credentials': boolean;
+};
 
 export const formatJSONResponse = (
   statusCode: ResponseCodes,
   response: Record<string, unknown>
-) => ({
+): FormatJSONResponse => ({
   headers: {
     'Access-Control-Allow-Origin': '*',
     'Access-Control-Allow-Credentials': true,
