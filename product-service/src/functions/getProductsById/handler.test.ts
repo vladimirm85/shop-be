@@ -1,6 +1,6 @@
 import { main } from './handler';
-import { FormatJSONResponse } from '../../libs/apiGateway';
-import { Product } from 'src/db';
+import { FormatJSONResponse } from '@libs/apiGateway';
+import { Product } from 'src/dbApi/apiInterface';
 
 const event = require('./mock.json');
 

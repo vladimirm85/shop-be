@@ -1,8 +1,9 @@
 import { main } from './handler';
-import { FormatJSONResponse } from '../../libs/apiGateway';
+import { FormatJSONResponse } from '@libs/apiGateway';
 
 describe('getProductsList lambda test', () => {
   test('lambda returns success response', async () => {
+    console.log(process.env);
     const response = (await main({}, null, null)) as FormatJSONResponse;
 
     expect(response.statusCode).toBe(200);

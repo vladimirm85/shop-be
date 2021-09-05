@@ -30,6 +30,7 @@ const serverlessConfiguration: AWS = {
       cors: true,
     },
   },
+  useDotenv: true,
   // import the function via paths
   functions: { getProductsList, getProductsById },
 };
