@@ -1,7 +1,7 @@
-import { Client } from 'pg';
+import { ClientConfig } from 'pg';
 
 export interface DbApiInterface {
-  client: Client;
+  bdConfig: ClientConfig;
   get: () => Promise<Product[]>;
   getOne: (id: string) => Promise<Product>;
 }

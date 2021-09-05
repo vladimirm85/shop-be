@@ -1,4 +1,7 @@
 import { ClientConfig } from 'pg';
+import * as dotenv from 'dotenv';
+
+dotenv.config();
 
 const { PG_HOST, PG_PORT, PG_DB_NAME, PG_USER, PG_PASSWORD } = process.env;
 

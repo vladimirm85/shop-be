@@ -5,16 +5,21 @@ import { bdConfig } from 'src/dbApi/bdConfig';
 
 class DbApi implements DbApiInterface {
   constructor(bdConfig: ClientConfig) {
-    this.client = new Client(bdConfig);
+    this.bdConfig = bdConfig;
   }
 
-  client: Client;
+  bdConfig: ClientConfig;
+
+  async getClient() {
+    const client = new Client(this.bdConfig);
+    await client.connect();
+    return client;
+  }
 
   async getOne(id: string) {
+    const client = await this.getClient();
     try {
-      await this.client.connect();
-
-      const data = await this.client.query<Product>(
+      const data = await client.query<Product>(
         'select ' +
           'id, title, description, price, count ' +
           'from product ' +
@@ -24,21 +29,20 @@ class DbApi implements DbApiInterface {
         [id]
       );
 
-      await this.client.end();
+      await client.end();
 
       return data.rows[0];
     } catch (e) {
-      await this.client.end();
+      await client.end();
 
       throw new Error(e);
     }
   }
 
   async get() {
+    const client = await this.getClient();
     try {
-      await this.client.connect();
-
-      const { rows } = await this.client.query<Product>(
+      const { rows } = await client.query<Product>(
         'select ' +
           'id, title, description, price, count ' +
           'from product ' +
@@ -46,11 +50,11 @@ class DbApi implements DbApiInterface {
           'on product_id = id'
       );
 
-      await this.client.end();
+      await client.end();
 
       return rows;
     } catch (e) {
-      await this.client.end();
+      await client.end();
 
       throw new Error(e);
     }

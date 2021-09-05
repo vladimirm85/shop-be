@@ -7,6 +7,7 @@ const config: Config.InitialOptions = {
     '^@libs/(.*)$': '<rootDir>/src/libs/$1',
     '^src/(.*)$': '<rootDir>/src/$1',
   },
+  testTimeout: 27000,
 };
 
 export default config;
