@@ -1,7 +1,7 @@
 import type { AWS } from '@serverless/typescript';
+import { getProductsById, getProductsList, postProduct } from 'src/functions';
 
-import getProductsList from '@functions/getProductsList';
-import getProductsById from '@functions/getProductsById';
+const { PG_HOST, PG_PORT, PG_DB_NAME, PG_USER, PG_PASSWORD } = process.env;
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -24,6 +24,11 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST,
+      PG_PORT,
+      PG_DB_NAME,
+      PG_USER,
+      PG_PASSWORD,
     },
     lambdaHashingVersion: '20201221',
     httpApi: {
@@ -32,7 +37,7 @@ const serverlessConfiguration: AWS = {
   },
   useDotenv: true,
   // import the function via paths
-  functions: { getProductsList, getProductsById },
+  functions: { getProductsList, getProductsById, postProduct },
 };
 
 module.exports = serverlessConfiguration;

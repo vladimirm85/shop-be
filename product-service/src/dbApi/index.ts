@@ -1,6 +1,6 @@
 import { Client, ClientConfig } from 'pg';
-import { DbApiInterface, ProductData } from 'src/dbApi/apiInterface';
-import { Product } from 'src/db';
+import { DbApiInterface } from 'src/dbApi/apiInterface';
+import { Product, ProductData } from 'src/models';
 import { bdConfig } from 'src/dbApi/bdConfig';
 
 class DbApi implements DbApiInterface {
@@ -59,21 +59,32 @@ class DbApi implements DbApiInterface {
     try {
       await client.query('BEGIN');
 
-      const { rows } = await client.query<Product>(
+      const { rows: pIdArr } = await client.query<{ product_id: string }>(
         'WITH product as (' +
           'INSERT INTO product (title, description, price) VALUES ' +
           '($1, $2, $3) ' +
           'RETURNING id' +
           ') ' +
           'INSERT INTO stock (product_id, count) VALUES ' +
-          '((SELECT product.id FROM product), $4)',
+          '((SELECT product.id FROM product), $4) ' +
+          'RETURNING product_id',
         [title, description, price, count]
+      );
+
+      const { rows: products } = await client.query<Product>(
+        'SELECT id, title, description, price, count ' +
+          'FROM product ' +
+          'LEFT JOIN stock ' +
+          'ON id = product_id ' +
+          'WHERE id = $1',
+        [pIdArr[0].product_id]
       );
 
       await client.query('COMMIT');
 
-      return rows[0];
+      return products[0];
     } catch (e) {
+      console.log('FROM API ERROR: ', e);
       await client.query('ROLLBACK');
 
       throw new Error(e);
