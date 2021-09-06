@@ -2,14 +2,14 @@ import 'source-map-support/register';
 import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import API from '../../dbApi';
+import ProductAPI from '../../dbApi';
 
 const getProduct: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
   console.log('GET PRODUCT LAMBDA LAUNCHED WITH EVENT: ', event);
 
   try {
     const id = event.pathParameters.id;
-    const product = await API.getOne(id);
+    const product = await ProductAPI.getOne(id);
 
     if (!product) {
       console.log(`PRODUCT WITH ID: ${id} NOT FOUND`);
