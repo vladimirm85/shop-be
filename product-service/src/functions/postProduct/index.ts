@@ -7,11 +7,15 @@ export default {
     {
       http: {
         method: 'post',
-        path: 'product',
+        path: 'products',
         cors: true,
         request: {
-          schema: {
-            'application/json': schema,
+          schemas: {
+            'application/json': {
+              schema: schema,
+              name: 'ProductPostModel',
+              description: 'Validation model for creating Product',
+            },
           },
         },
       },

@@ -84,7 +84,7 @@ class DbApi implements DbApiInterface {
 
       return products[0];
     } catch (e) {
-      console.log('FROM API ERROR: ', e);
+      console.log('ROLLBACK');
       await client.query('ROLLBACK');
 
       throw new Error(e);

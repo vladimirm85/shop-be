@@ -1,6 +1,8 @@
 import 'source-map-support/register';
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
-import { formatJSONResponse } from '@libs/apiGateway';
+import {
+  formatJSONResponse,
+  ValidatedEventAPIGatewayProxyEvent,
+} from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import ProductAPI from '../../dbApi';
 import schema from './schema';
@@ -12,22 +14,16 @@ const postProduct: ValidatedEventAPIGatewayProxyEvent<typeof schema> = async (
   console.log('POST PRODUCT LAMBDA LAUNCHED WITH EVENT: ', event);
 
   try {
-    const { title, description, price, count } = JSON.parse(
-      // @ts-ignore
-      event.body
+    const projectData = (
+      typeof event.body === 'string' ? JSON.parse(event.body) : event.body
     ) as ProductData;
 
-    const product = await ProductAPI.postOne({
-      title,
-      description,
-      price,
-      count: count || 0,
-    });
+    const product = await ProductAPI.postOne(projectData);
 
     if (!product) {
       console.log(`FAILED TO CREATE PRODUCT WITH DATA: `, event.body);
       return formatJSONResponse(500, {
-        message: `FAILED TO CREATE PRODUCT WITH DATA`,
+        message: `Failed to create product`,
       });
     }
 

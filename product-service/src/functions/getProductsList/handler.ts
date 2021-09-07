@@ -13,6 +13,8 @@ const getProducts: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
     if (products) {
       return formatJSONResponse(200, { products });
     }
+
+    return formatJSONResponse(200, { products: [] });
   } catch (e) {
     console.log('DATABASE ERROR: ', e);
     formatJSONResponse(500, { message: e.message });

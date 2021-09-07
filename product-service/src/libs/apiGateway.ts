@@ -19,7 +19,7 @@ export interface FormatJSONResponse {
   body: string;
 }
 
-type ResponseCodes = 200 | 404 | 500;
+type ResponseCodes = 200 | 400 | 404 | 500;
 
 type Headers = {
   'Access-Control-Allow-Origin': string;
