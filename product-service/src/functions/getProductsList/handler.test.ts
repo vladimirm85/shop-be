@@ -1,5 +1,5 @@
 import { main } from './handler';
-import { FormatJSONResponse } from '../../libs/apiGateway';
+import { FormatJSONResponse } from '@libs/apiGateway';
 
 describe('getProductsList lambda test', () => {
   test('lambda returns success response', async () => {

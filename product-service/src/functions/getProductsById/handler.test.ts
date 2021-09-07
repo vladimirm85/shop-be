@@ -1,6 +1,6 @@
 import { main } from './handler';
-import { FormatJSONResponse } from '../../libs/apiGateway';
-import { Product } from 'src/db';
+import { FormatJSONResponse } from '@libs/apiGateway';
+import { Product } from 'src/models';
 
 const event = require('./mock.json');
 
@@ -33,22 +33,34 @@ describe('getProductsById lambda test', () => {
     const response = (await main(event, null, null)) as FormatJSONResponse;
     const { product } = JSON.parse(response.body) as { product: Product };
 
-    expect(product.id).toBe('59f5d715-ea70-4123-a78c-0380eec93ede');
-    expect(product.count).toBe(4);
-    expect(product.description).toBe('Mercedes-AMG Petronas F1 Team');
-    expect(product.price).toBe(200);
-    expect(product.title).toBe('Mercedes Poster');
+    expect(product.id).toBe('92f26fbb-dacd-44c5-8490-2fc8c09b5941');
+    expect(product.count).toBe(11);
+    expect(product.description).toBe('Alfa Romeo Racing Orlen');
+    expect(product.price).toBe(132);
+    expect(product.title).toBe('Alfa Romeo Poster');
   });
 
-  test('lambda returns error on incorrect id', async () => {
+  test('lambda returns 404 error on incorrect id', async () => {
     const event = {
       pathParameters: {
-        id: 'incorrect id',
+        id: '6cb93017-f811-4019-be44-f3fc3502e7d0',
       },
     };
 
     const response = (await main(event, null, null)) as FormatJSONResponse;
 
     expect(response.statusCode).toBe(404);
+  });
+
+  test('lambda returns error on invalid id', async () => {
+    const event = {
+      pathParameters: {
+        id: 'invalid id',
+      },
+    };
+
+    const response = (await main(event, null, null)) as FormatJSONResponse;
+
+    expect(response.statusCode).toBe(500);
   });
 });
