@@ -1,0 +1,39 @@
+import type { AWS } from '@serverless/typescript';
+import { importProductsFile } from 'src/functions';
+
+const serverlessConfiguration: AWS = {
+  service: 'import-service',
+  frameworkVersion: '2',
+  variablesResolutionMode: '20210326',
+  useDotenv: true,
+  custom: {
+    webpack: {
+      webpackConfig: './webpack.config.js',
+      includeModules: true,
+    },
+  },
+  plugins: ['serverless-webpack'],
+  provider: {
+    name: 'aws',
+    runtime: 'nodejs14.x',
+    stage: 'dev',
+    region: 'eu-west-1',
+    apiGateway: {
+      minimumCompressionSize: 1024,
+      shouldStartNameWithService: true,
+    },
+    environment: {
+      AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      PG_HOST: '${env:PG_HOST}',
+      PG_PORT: '${env:PG_PORT}',
+      PG_DB_NAME: '${env:PG_DB_NAME}',
+      PG_USER: '${env:PG_USER}',
+      PG_PASSWORD: '${env:PG_PASSWORD}',
+    },
+    lambdaHashingVersion: '20201221',
+  },
+  // import the function via paths
+  functions: { importProductsFile },
+};
+
+module.exports = serverlessConfiguration;
