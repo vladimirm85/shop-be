@@ -1,38 +1,28 @@
 import 'source-map-support/register';
-import type { ValidatedEventAPIGatewayProxyEvent } from '@libs/apiGateway';
 import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
-import ProductAPI from '../../dbApi';
-import { validateUUID } from 'src/services';
+import { S3 } from 'aws-sdk';
+import { ImportFileService } from 'src/servises';
 
-const getProduct: ValidatedEventAPIGatewayProxyEvent<any> = async (event) => {
-  console.log('GET PRODUCT LAMBDA LAUNCHED WITH EVENT: ', event);
+const { REGION } = process.env;
+
+const importProductsFile = async (event) => {
+  console.log('IMPORT PRODUCTS FILE LAMBDA LAUNCHED WITH EVENT: ', event);
 
   try {
-    const { id } = event.pathParameters;
+    const { name } = event.queryStringParameters;
 
-    if (!validateUUID(id)) {
-      console.log(`PRODUCT ID: ${id} IS NOT UUID`);
+    const s3 = new S3({ region: REGION });
 
-      return formatJSONResponse(400, {
-        message: `Invalid path parameter`,
-      });
-    }
+    const importFileService = new ImportFileService(s3);
 
-    const product = await ProductAPI.getOne(id);
+    const signedUrl = await importFileService.getSignedUrlPromise(name);
 
-    if (!product) {
-      console.log(`PRODUCT WITH ID: ${id} NOT FOUND`);
-      return formatJSONResponse(404, {
-        message: `No such product with id: ${id}`,
-      });
-    }
-
-    return formatJSONResponse(200, { product });
+    return formatJSONResponse(200, { signedUrl });
   } catch (e) {
     console.log('DATABASE ERROR: ', e);
     return formatJSONResponse(500, { message: e.message });
   }
 };
 
-export const main = middyfy(getProduct);
+export const main = middyfy(importProductsFile);

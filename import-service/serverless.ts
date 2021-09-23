@@ -24,15 +24,24 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      PG_HOST: '${env:PG_HOST}',
-      PG_PORT: '${env:PG_PORT}',
-      PG_DB_NAME: '${env:PG_DB_NAME}',
-      PG_USER: '${env:PG_USER}',
-      PG_PASSWORD: '${env:PG_PASSWORD}',
+      REGION: '${self:provider.region}',
+      BUCKET: '${env:BUCKET}',
+      UPLOADED_FOLDER: '${env:UPLOADED_FOLDER}',
     },
     lambdaHashingVersion: '20201221',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['s3:ListBucket'],
+        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:*'],
+        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}/*'],
+      },
+    ],
   },
-  // import the function via paths
   functions: { importProductsFile },
 };
 
