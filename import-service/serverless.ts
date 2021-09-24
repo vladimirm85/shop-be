@@ -1,5 +1,5 @@
 import type { AWS } from '@serverless/typescript';
-import { importProductsFile } from 'src/functions';
+import { importProductsFile, importFileParser } from 'src/functions';
 
 const serverlessConfiguration: AWS = {
   service: 'import-service',
@@ -27,6 +27,7 @@ const serverlessConfiguration: AWS = {
       REGION: '${self:provider.region}',
       BUCKET: '${env:BUCKET}',
       UPLOADED_FOLDER: '${env:UPLOADED_FOLDER}',
+      PARSED_FOLDER: '${env:PARSED_FOLDER}',
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -42,7 +43,7 @@ const serverlessConfiguration: AWS = {
       },
     ],
   },
-  functions: { importProductsFile },
+  functions: { importProductsFile, importFileParser },
 };
 
 module.exports = serverlessConfiguration;

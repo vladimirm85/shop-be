@@ -12,6 +12,8 @@ export class ImportFileService {
 
   async getSignedUrlPromise(fileName: string) {
     try {
+      console.log('GET SIGNED URL FOR FILE: ', fileName);
+
       return await this.s3.getSignedUrlPromise('putObject', {
         ...params,
         Key: `${UPLOADED_FOLDER}/${fileName}`,

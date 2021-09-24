@@ -18,6 +18,8 @@ const importProductsFile = async (event) => {
 
     const signedUrl = await importFileService.getSignedUrlPromise(name);
 
+    console.log('SIGNED URL: ', signedUrl);
+
     return formatJSONResponse(200, { signedUrl });
   } catch (e) {
     console.log('DATABASE ERROR: ', e);
