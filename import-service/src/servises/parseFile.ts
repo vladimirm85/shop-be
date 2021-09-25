@@ -37,16 +37,21 @@ export class ParseFileService {
 
       console.log('FILE PARSE START');
 
-      fileReadStream
-        .pipe(csv())
-        .on('data', (chunk) =>
-          console.log(`RECEIVE DATA PART: ${JSON.stringify(chunk)}`)
-        )
-        .on('error', (e) => {
-          console.log('FILE PARSE ERROR: ', e);
-          throw e;
-        })
-        .on('end', () => console.log('FILE PARSE FINISH'));
+      return new Promise<void>((resolve, reject) =>
+        fileReadStream
+          .pipe(csv())
+          .on('data', (chunk) =>
+            console.log(`RECEIVE DATA PART: ${JSON.stringify(chunk)}`)
+          )
+          .on('error', (e) => {
+            console.log('FILE PARSE ERROR: ', e);
+            reject(e);
+          })
+          .on('end', () => {
+            console.log('FILE PARSE FINISH');
+            resolve();
+          })
+      );
     } catch (e) {
       console.log('FILE PARSE ERROR: ', e);
       throw e;

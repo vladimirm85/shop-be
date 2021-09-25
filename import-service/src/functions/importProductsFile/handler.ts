@@ -12,6 +12,9 @@ const importProductsFile = async (event) => {
   try {
     const { name } = event.queryStringParameters;
 
+    console.log('NAME: ', name);
+    console.log('REGION: ', REGION);
+
     const s3 = new S3({ region: REGION });
 
     const importFileService = new ImportFileService(s3);
