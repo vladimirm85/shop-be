@@ -1,8 +1,8 @@
 import type { AWS } from '@serverless/typescript';
-import { getProductsById, getProductsList, postProduct } from 'src/functions';
+import { importProductsFile, importFileParser } from 'src/functions';
 
 const serverlessConfiguration: AWS = {
-  service: 'product-service',
+  service: 'import-service',
   frameworkVersion: '2',
   variablesResolutionMode: '20210326',
   useDotenv: true,
@@ -24,16 +24,26 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
-      PG_HOST: '${env:PG_HOST}',
-      PG_PORT: '${env:PG_PORT}',
-      PG_DB_NAME: '${env:PG_DB_NAME}',
-      PG_USER: '${env:PG_USER}',
-      PG_PASSWORD: '${env:PG_PASSWORD}',
+      REGION: '${self:provider.region}',
+      BUCKET: '${env:BUCKET}',
+      UPLOADED_FOLDER: '${env:UPLOADED_FOLDER}',
+      PARSED_FOLDER: '${env:PARSED_FOLDER}',
     },
     lambdaHashingVersion: '20201221',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['s3:ListBucket'],
+        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}'],
+      },
+      {
+        Effect: 'Allow',
+        Action: ['s3:*'],
+        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}/*'],
+      },
+    ],
   },
-  // import the function via paths
-  functions: { getProductsList, getProductsById, postProduct },
+  functions: { importProductsFile, importFileParser },
 };
 
 module.exports = serverlessConfiguration;
