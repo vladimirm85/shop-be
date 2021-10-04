@@ -34,6 +34,22 @@ const serverlessConfiguration: AWS = {
   },
   // import the function via paths
   functions: { getProductsList, getProductsById, postProduct },
+  resources: {
+    Resources: {
+      CatalogItemsQueue: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'CatalogItemsQueue',
+        },
+      },
+      CreateProductTopic: {
+        Type: 'AWS::SQS::Queue',
+        Properties: {
+          QueueName: 'CatalogItemsQueue',
+        },
+      },
+    },
+  },
 };
 
 module.exports = serverlessConfiguration;

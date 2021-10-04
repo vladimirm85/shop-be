@@ -1,11 +1,11 @@
 import csv from 'csv-parser';
-import { S3 } from 'aws-sdk';
-import { S3EventRecord } from 'aws-lambda';
+import { S3, SQS } from 'aws-sdk';
+import { Callback, S3EventRecord } from 'aws-lambda';
 
 const { BUCKET, UPLOADED_FOLDER, PARSED_FOLDER } = process.env;
 
 export class ParseFileService {
-  constructor(private s3: S3) {}
+  constructor(private s3: S3, private callback: Callback<void>) {}
 
   async parse({ s3: { object } }: S3EventRecord) {
     const { key } = object;
@@ -40,9 +40,9 @@ export class ParseFileService {
       return new Promise<void>((resolve, reject) =>
         fileReadStream
           .pipe(csv())
-          .on('data', (chunk) =>
-            console.log(`RECEIVE DATA PART: ${JSON.stringify(chunk)}`)
-          )
+          .on('data', (chunk) => {
+            console.log(`RECEIVE DATA PART: ${JSON.stringify(chunk)}`);
+          })
           .on('error', (e) => {
             console.log('FILE PARSE ERROR: ', e);
             reject(e);
@@ -82,5 +82,11 @@ export class ParseFileService {
       console.log('ERROR WHILE MOVING: ', e);
       throw e;
     }
+  }
+
+  private async sendToSQS(chunk: unknown): Promise<void> {
+    const sqs = new SQS();
+
+    sqs.sendMessage();
   }
 }

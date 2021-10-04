@@ -1,13 +1,13 @@
 import 'source-map-support/register';
-import { formatJSONResponse } from '@libs/apiGateway';
 import { middyfy } from '@libs/lambda';
 import { S3 } from 'aws-sdk';
 import { ParseFileService } from 'src/servises/parseFile';
 import { S3EventRecord } from 'aws-lambda';
+import { S3Handler } from 'aws-lambda';
 
 const { REGION } = process.env;
 
-const importFileParser = async (event) => {
+const importFileParser: S3Handler = async (event, _, callback) => {
   console.log('IMPORT FILE PARSER LAMBDA LAUNCHED WITH EVENT: ', event);
 
   try {
@@ -16,14 +16,13 @@ const importFileParser = async (event) => {
     const records = await Promise.all<S3EventRecord>(RecordsPromise);
 
     const s3 = new S3({ region: REGION });
-    const parseFileService = new ParseFileService(s3);
+    const parseFileService = new ParseFileService(s3, callback);
 
     await Promise.all(records.map((record) => parseFileService.parse(record)));
 
-    return formatJSONResponse(200, { message: 'Successfully parsed' });
+    console.log('IMPORT FILE PARSER LAMBDA FINISHED: SUCCESSFULLY PARSED');
   } catch (e) {
     console.log('DATABASE ERROR: ', e);
-    return formatJSONResponse(500, { message: e.message });
   }
 };
 
