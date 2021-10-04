@@ -12,6 +12,8 @@ const catalogBatchProcess: SQSHandler = async (event) => {
     await Promise.all(
       Records.map((record) => CatalogBatchService.handleRecord(record))
     );
+
+    console.log('CATALOG BATCH PROCESS LAMBDA FINISHED');
   } catch (e) {
     console.log('DATABASE ERROR: ', e);
   }

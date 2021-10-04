@@ -5,7 +5,7 @@ import { SQSRecord } from 'aws-lambda';
 import { ProductValidator } from 'src/services/productValidator';
 import { Product } from 'src/models';
 
-const { REGION } = process.env;
+const { REGION, CREATE_PRODUCT_TOPIC } = process.env;
 
 export class CatalogBatchProcessService {
   constructor(private dbApi: DbApiInterface) {}
@@ -48,7 +48,7 @@ export class CatalogBatchProcessService {
         .publish({
           Subject: 'Created new product in DB',
           Message: JSON.stringify(product),
-          TopicArn: process.env.CREATE_PRODUCT_TOPIC_ARN,
+          TopicArn: CREATE_PRODUCT_TOPIC,
         })
         .promise();
       console.log('MESSAGE SENT');

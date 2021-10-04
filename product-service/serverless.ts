@@ -29,10 +29,12 @@ const serverlessConfiguration: AWS = {
       PG_DB_NAME: '${env:PG_DB_NAME}',
       PG_USER: '${env:PG_USER}',
       PG_PASSWORD: '${env:PG_PASSWORD}',
+      CREATE_PRODUCT_TOPIC: {
+        Ref: 'CreateProductTopic',
+      },
     },
     lambdaHashingVersion: '20201221',
   },
-  // import the function via paths
   functions: { getProductsList, getProductsById, postProduct },
   resources: {
     Resources: {
@@ -43,9 +45,19 @@ const serverlessConfiguration: AWS = {
         },
       },
       CreateProductTopic: {
-        Type: 'AWS::SQS::Queue',
+        Type: 'AWS::SNS::Topic',
         Properties: {
-          QueueName: 'CatalogItemsQueue',
+          TopicName: 'CreateProductTopic',
+        },
+      },
+    },
+    Outputs: {
+      CatalogItemsQueueURL: {
+        Value: {
+          Ref: 'CatalogItemsQueue',
+        },
+        Export: {
+          Name: 'CatalogItemsQueue',
         },
       },
     },
