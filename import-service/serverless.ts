@@ -28,7 +28,9 @@ const serverlessConfiguration: AWS = {
       BUCKET: '${env:BUCKET}',
       UPLOADED_FOLDER: '${env:UPLOADED_FOLDER}',
       PARSED_FOLDER: '${env:PARSED_FOLDER}',
-      CATALOG_ITEMS_QUEUE_URL: { 'Fn::ImportValue': 'CatalogItemsQueue' },
+      CATALOG_ITEMS_QUEUE_URL: {
+        'Fn::ImportValue': 'CatalogItemsQueueURL',
+      },
     },
     lambdaHashingVersion: '20201221',
     iamRoleStatements: [
@@ -47,7 +49,7 @@ const serverlessConfiguration: AWS = {
         Action: ['sqs:*'],
         Resource: [
           {
-            'Fn::ImportValue': 'CatalogItemsQueue',
+            'Fn::ImportValue': 'CatalogItemsQueueArn',
           },
         ],
       },

@@ -1,5 +1,10 @@
 import type { AWS } from '@serverless/typescript';
-import { getProductsById, getProductsList, postProduct } from 'src/functions';
+import {
+  getProductsById,
+  getProductsList,
+  postProduct,
+  catalogBatchProcess,
+} from 'src/functions';
 
 const serverlessConfiguration: AWS = {
   service: 'product-service',
@@ -32,10 +37,26 @@ const serverlessConfiguration: AWS = {
       CREATE_PRODUCT_TOPIC: {
         Ref: 'CreateProductTopic',
       },
+      EMAIL_PRIMARY: '${env:EMAIL_PRIMARY}',
+      EMAIL_SECONDARY: '${env:EMAIL_SECONDARY}',
     },
     lambdaHashingVersion: '20201221',
+    iamRoleStatements: [
+      {
+        Effect: 'Allow',
+        Action: ['sns:*'],
+        Resource: {
+          Ref: 'CreateProductTopic',
+        },
+      },
+    ],
   },
-  functions: { getProductsList, getProductsById, postProduct },
+  functions: {
+    getProductsList,
+    getProductsById,
+    postProduct,
+    catalogBatchProcess,
+  },
   resources: {
     Resources: {
       CatalogItemsQueue: {
@@ -50,6 +71,40 @@ const serverlessConfiguration: AWS = {
           TopicName: 'CreateProductTopic',
         },
       },
+      NewProductSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:EMAIL_PRIMARY}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CreateProductTopic',
+          },
+          FilterPolicy: {
+            price: [
+              {
+                numeric: ['<=', 100],
+              },
+            ],
+          },
+        },
+      },
+      NewExpensiveProductSubscription: {
+        Type: 'AWS::SNS::Subscription',
+        Properties: {
+          Endpoint: '${env:EMAIL_SECONDARY}',
+          Protocol: 'email',
+          TopicArn: {
+            Ref: 'CreateProductTopic',
+          },
+          FilterPolicy: {
+            price: [
+              {
+                numeric: ['>', 100],
+              },
+            ],
+          },
+        },
+      },
     },
     Outputs: {
       CatalogItemsQueueURL: {
@@ -57,7 +112,15 @@ const serverlessConfiguration: AWS = {
           Ref: 'CatalogItemsQueue',
         },
         Export: {
-          Name: 'CatalogItemsQueue',
+          Name: 'CatalogItemsQueueURL',
+        },
+      },
+      CatalogItemsQueueArn: {
+        Value: {
+          'Fn::GetAtt': ['CatalogItemsQueue', 'Arn'],
+        },
+        Export: {
+          Name: 'CatalogItemsQueueArn',
         },
       },
     },

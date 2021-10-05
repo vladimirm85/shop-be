@@ -10,7 +10,9 @@ export class ProductValidator {
 
     if (!this.isProduct(this.obj as object)) return false;
 
-    return this.isValidProduct(this.obj as ProductData);
+    if (!this.isValidProduct(this.obj as ProductData)) return false;
+
+    return true;
   };
 
   private validKeysArray = ['count', 'description', 'price', 'title'];
@@ -33,9 +35,9 @@ export class ProductValidator {
     price,
     title,
   }: ProductData) => {
-    if (!this.isValidCount(count)) return false;
+    if (!this.isValidCount(+count)) return false;
 
-    if (!this.isValidNumber(price)) return false;
+    if (!this.isValidNumber(+price)) return false;
 
     if (!this.isValidString(description)) return false;
 

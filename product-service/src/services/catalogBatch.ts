@@ -22,8 +22,10 @@ export class CatalogBatchProcessService {
       console.log('PRODUCT VALIDATION STARTED');
       const isValidProduct = this.validateProduct(productCandidate);
       if (!isValidProduct) {
+        console.log('PRODUCT NOT VALID');
         throw new Error('PRODUCT NO VALID');
       }
+      console.log('PRODUCT IS VALID');
 
       console.log('CREATING NEW PRODUCT');
       const product = await this.dbApi.postOne(productCandidate);
@@ -31,7 +33,7 @@ export class CatalogBatchProcessService {
 
       await this.sendSNSMessage(product);
     } catch (e) {
-      console.log(`PRODUCT HANDLING FAILED: ${JSON.stringify(e)}`);
+      console.log(`PRODUCT HANDLING FAILED: `, e);
     }
   }
 
@@ -49,6 +51,12 @@ export class CatalogBatchProcessService {
           Subject: 'Created new product in DB',
           Message: JSON.stringify(product),
           TopicArn: CREATE_PRODUCT_TOPIC,
+          MessageAttributes: {
+            price: {
+              DataType: 'Number',
+              StringValue: `${product.price}`,
+            },
+          },
         })
         .promise();
       console.log('MESSAGE SENT');
