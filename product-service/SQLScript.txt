@@ -1,0 +1,51 @@
+Create tables:
+
+CREATE TABLE product (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title varchar NOT null,
+  description varchar,
+  price integer
+);
+
+CREATE TABLE stock (
+  id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
+  product_id uuid REFERENCES product(id) NOT null,
+  count integer DEFAULT 0
+);
+
+ALTER TABLE stock
+  DROP CONSTRAINT stock_product_id_fkey
+
+ALTER TABLE stock
+  ADD CONSTRAINT stock_product_id_fkey
+    FOREIGN KEY (product_id)
+    REFERENCES product(id)
+    ON DELETE CASCADE
+
+Fill data:
+
+WITH product AS (
+  INSERT INTO product (title, description, price) VALUES
+  ('Mercedes Poster', 'Mercedes-AMG Petronas F1 Team', 200),
+  ('Ferrari Poster', 'Scuderia Ferrari Mission Winnow', 50),
+  ('Red Bull Poster', 'Red Bull Racing Honda', 234),
+  ('Alpine-Renault Poster', 'Alpine F1 Team', 74),
+  ('AlphaTauri Poster', 'Scuderia AlphaTauri Honda', 177),
+  ('Alfa Romeo Poster', 'Alfa Romeo Racing Orlen', 132),
+  ('Aston Martin Poster', 'Aston Martin Cognizant F1 Team', 95),
+  ('McLaren Poster', 'McLaren F1 Team', 205),
+  ('Williams Poster', 'Williams Racing', 70),
+  ('Haas Poster', 'Uralkali Haas F1 Team', 57)
+    RETURNING id, title
+)
+INSERT INTO stock (product_id, count) VALUES
+((SELECT product.id FROM product WHERE product.title = 'Mercedes Poster'), 4),
+((SELECT product.id FROM product WHERE product.title = 'Ferrari Poster'), 7),
+((SELECT product.id FROM product WHERE product.title = 'Red Bull Poster'), 8),
+((SELECT product.id FROM product WHERE product.title = 'Alpine-Renault Poster'), 1),
+((SELECT product.id FROM product WHERE product.title = 'AlphaTauri Poster'), 2),
+((SELECT product.id FROM product WHERE product.title = 'Alfa Romeo Poster'), 11),
+((SELECT product.id FROM product WHERE product.title = 'Aston Martin Poster'), 6),
+((SELECT product.id FROM product WHERE product.title = 'McLaren Poster'), 2),
+((SELECT product.id FROM product WHERE product.title = 'Williams Poster'), 4),
+((SELECT product.id FROM product WHERE product.title = 'Haas Poster'), 9);
