@@ -1,0 +1,20 @@
+{
+  "Records": [
+    {
+      "body": {
+        "title": "Mock title 1",
+        "description": "Mock description 1",
+        "price": "99",
+        "count": "1"
+      }
+    },
+    {
+      "body": {
+        "title": "Mock title 2",
+        "description": "Mock description 2",
+        "price": "101",
+        "count": "2"
+      }
+    }
+  ]
+}

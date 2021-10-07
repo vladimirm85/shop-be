@@ -1,6 +1,5 @@
 import { DbApiInterface } from 'src/dbApi/apiInterface';
 import { SNS } from 'aws-sdk';
-import API from 'src/dbApi';
 import { SQSRecord } from 'aws-lambda';
 import { ProductValidator } from 'src/services/productValidator';
 import { Product } from 'src/models';
@@ -14,10 +13,11 @@ export class CatalogBatchProcessService {
     return new SNS({ region: REGION });
   }
 
-  public async handleRecord({ body }: SQSRecord): Promise<void> {
-    console.log(`PRODUCT HANDLING STARTED WITH DATA: ${body}`);
+  public async handleRecord(record: SQSRecord): Promise<void> {
+    console.log(`PRODUCT HANDLING STARTED WITH DATA: ${record}`);
     try {
-      const productCandidate = JSON.parse(body);
+      const { body: productCandidate } =
+        typeof record === 'string' ? JSON.parse(record) : record;
 
       console.log('PRODUCT VALIDATION STARTED');
       const isValidProduct = this.validateProduct(productCandidate);
@@ -65,5 +65,3 @@ export class CatalogBatchProcessService {
     }
   }
 }
-
-export default new CatalogBatchProcessService(API);
