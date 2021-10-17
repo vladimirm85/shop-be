@@ -1,5 +1,5 @@
 import type { AWS } from '@serverless/typescript';
-import { importProductsFile, importFileParser } from 'src/functions';
+import { basicAuthorizer } from 'src/functions';
 
 const serverlessConfiguration: AWS = {
   service: 'authorization-service',
@@ -24,31 +24,24 @@ const serverlessConfiguration: AWS = {
     },
     environment: {
       AWS_NODEJS_CONNECTION_REUSE_ENABLED: '1',
+      vladimirm85: '${env:vladimirm85}',
+      NODE_OPTIONS: '--enable-source-maps --stack-trace-limit=1000',
     },
     lambdaHashingVersion: '20201221',
-    iamRoleStatements: [
-      {
-        Effect: 'Allow',
-        Action: ['s3:ListBucket'],
-        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}'],
-      },
-      {
-        Effect: 'Allow',
-        Action: ['s3:*'],
-        Resource: ['arn:aws:s3:::${self:provider.environment.BUCKET}/*'],
-      },
-      {
-        Effect: 'Allow',
-        Action: ['sqs:*'],
-        Resource: [
-          {
-            'Fn::ImportValue': 'CatalogItemsQueueArn',
-          },
-        ],
-      },
-    ],
   },
-  functions: { importProductsFile, importFileParser },
+  resources: {
+    Outputs: {
+      AuthorizerARN: {
+        Value: {
+          'Fn::GetAtt': ['BasicAuthorizerLambdaFunction', 'Arn'],
+        },
+        Export: {
+          Name: 'AuthorizerARN',
+        },
+      },
+    },
+  },
+  functions: { basicAuthorizer },
 };
 
 module.exports = serverlessConfiguration;

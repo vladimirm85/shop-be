@@ -16,6 +16,13 @@ export const importProductsFile: AWS['functions'][string] = {
             },
           },
         },
+        authorizer: {
+          name: 'basicAuthorizer',
+          arn: '${cf:authorization-service-dev.AuthorizerArn}',
+          resultTtlInSeconds: 0,
+          identitySource: 'method.request.header.Authorization',
+          type: 'token',
+        },
       },
     },
   ],
