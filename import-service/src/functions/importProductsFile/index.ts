@@ -18,7 +18,9 @@ export const importProductsFile: AWS['functions'][string] = {
         },
         authorizer: {
           name: 'basicAuthorizer',
-          arn: '${cf:authorization-service-dev.AuthorizerArn}',
+          arn: {
+            'Fn::ImportValue': 'AuthorizerARN',
+          },
           resultTtlInSeconds: 0,
           identitySource: 'method.request.header.Authorization',
           type: 'token',

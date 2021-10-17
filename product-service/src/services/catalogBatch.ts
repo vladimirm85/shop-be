@@ -14,13 +14,20 @@ export class CatalogBatchProcessService {
   }
 
   public async handleRecord(record: SQSRecord): Promise<void> {
-    console.log(`PRODUCT HANDLING STARTED WITH DATA: ${record}`);
+    console.log(
+      `PRODUCT HANDLING STARTED WITH DATA: ${JSON.stringify(record)}`
+    );
     try {
       const { body: productCandidate } =
         typeof record === 'string' ? JSON.parse(record) : record;
 
-      console.log('PRODUCT VALIDATION STARTED');
-      const isValidProduct = this.validateProduct(productCandidate);
+      const product =
+        typeof productCandidate === 'string'
+          ? JSON.parse(productCandidate)
+          : productCandidate;
+
+      console.log('PRODUCT VALIDATION STARTED, PRODUCT: ', product);
+      const isValidProduct = this.validateProduct(product);
       if (!isValidProduct) {
         console.log('PRODUCT NOT VALID');
         throw new Error('PRODUCT NO VALID');
@@ -28,10 +35,10 @@ export class CatalogBatchProcessService {
       console.log('PRODUCT IS VALID');
 
       console.log('CREATING NEW PRODUCT');
-      const product = await this.dbApi.postOne(productCandidate);
-      console.log(`PRODUCT CREATED: ${JSON.stringify(product)}`);
+      const createdProduct = await this.dbApi.postOne(product);
+      console.log(`PRODUCT CREATED: ${JSON.stringify(createdProduct)}`);
 
-      await this.sendSNSMessage(product);
+      await this.sendSNSMessage(createdProduct);
     } catch (e) {
       console.log(`PRODUCT HANDLING FAILED: `, e);
     }

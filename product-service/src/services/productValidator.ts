@@ -4,12 +4,16 @@ export class ProductValidator {
   constructor(private obj: unknown) {}
 
   validate = () => {
+    console.log('isObject');
     if (!this.isObject(this.obj)) return false;
 
+    console.log('isCorrectNumberOfProps');
     if (!this.isCorrectNumberOfProps(this.obj as object)) return false;
 
+    console.log('isProduct');
     if (!this.isProduct(this.obj as object)) return false;
 
+    console.log('isValidProduct');
     if (!this.isValidProduct(this.obj as ProductData)) return false;
 
     return true;
